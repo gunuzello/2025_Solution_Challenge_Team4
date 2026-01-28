@@ -1,0 +1,1 @@
+# Gemini 호출 클라이언트 ( 나중에 vertex AI 로 변경 예정 )
