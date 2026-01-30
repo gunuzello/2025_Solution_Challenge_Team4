@@ -1,0 +1,23 @@
+# ===== Python =====
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+
+# ===== Virtual Environment =====
+.venv/
+venv/
+
+# ===== Environment Variables =====
+.env
+
+# ===== macOS =====
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# ===== VSCode =====
+.vscode/
+
+# ===== Logs =====
+*.log
