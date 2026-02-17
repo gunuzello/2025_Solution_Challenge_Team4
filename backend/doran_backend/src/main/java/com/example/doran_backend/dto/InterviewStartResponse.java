@@ -1,11 +1,11 @@
 package com.example.doran_backend.dto;
 
-import lombok.Builder;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
-@Builder
-public class StartInterviewResponse {
+@AllArgsConstructor
+public class InterviewStartResponse {
 
     private String sessionId;
 }

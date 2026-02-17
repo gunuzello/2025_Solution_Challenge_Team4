@@ -31,7 +31,7 @@ public class InterviewSession {
     private String endReason; // 예: USER_EXIT
 
     @Column(name = "status", length = 10, nullable = false)
-    private String status; // ACTIVE / ENDED
+    private String status; // ACTIVE / ENDED -> enum 고려해보기 알아나 보기
 
     /** start 시점 생성용 */
     public static InterviewSession start(Long userId, LocalDateTime clientTs) {

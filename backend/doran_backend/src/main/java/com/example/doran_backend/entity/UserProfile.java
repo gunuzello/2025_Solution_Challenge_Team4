@@ -38,6 +38,12 @@ public class UserProfile {
     @Column(name = "completed_at")
     private LocalDateTime completedAt;
 
+    @Column(name = "core_values", length = 200)
+    private String coreValues;
+
+    @Column(name = "extra_value", length = 7)
+    private String extraValue;
+
     // 필요하면 나중에 setter 대신 update 메서드로 변경
     public void completeOnboarding() {
         this.onboardingCompleted = true;
