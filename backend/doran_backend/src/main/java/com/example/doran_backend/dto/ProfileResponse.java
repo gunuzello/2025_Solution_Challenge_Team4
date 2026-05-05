@@ -17,4 +17,5 @@ public class ProfileResponse {
     private List<String> coreValues;
     private String extraValue;
     private Boolean onboardingCompleted;
+    private Boolean guideCompleted;
 }

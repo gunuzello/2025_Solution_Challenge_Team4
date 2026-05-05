@@ -32,6 +32,7 @@ public class ChatLogService {
                         l.getUserText(),
                         l.getReply(),
                         l.getQuestion(),
+                        l.getRawModelOutput(),
                         l.getPromptVersion(),
                         l.getModel(),
                         l.getLatencyMs()

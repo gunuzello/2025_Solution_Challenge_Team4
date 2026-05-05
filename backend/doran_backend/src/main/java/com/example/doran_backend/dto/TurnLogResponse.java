@@ -17,6 +17,7 @@ public class TurnLogResponse {
     private String userText;
     private String reply;
     private String question;
+    private String rawModelOutput;
     private String promptVersion;
     private String model;
     private Long latencyMs;

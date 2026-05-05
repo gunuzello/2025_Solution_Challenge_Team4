@@ -8,14 +8,18 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class InterviewEndRequest {
-
+public class EssayGenerateRequest {
     @NotBlank
     private String sessionId;
 
     @NotNull
     private Long userId;
 
-    @Size(max = 30)
-    private String endReason; // USER_EXIT 등
+    @Size(max = 80)
+    private String title;
+
+    private Integer representativeYear;
+
+    @Size(max = 40)
+    private String category;
 }

@@ -44,9 +44,17 @@ public class UserProfile {
     @Column(name = "extra_value", length = 7)
     private String extraValue;
 
+    @Column(name = "guide_completed", nullable = false)
+    @Builder.Default
+    private Boolean guideCompleted = false;
+
     // 필요하면 나중에 setter 대신 update 메서드로 변경
     public void completeOnboarding() {
         this.onboardingCompleted = true;
         this.completedAt = LocalDateTime.now();
+    }
+
+    public void completeGuide() {
+        this.guideCompleted = true;
     }
 }

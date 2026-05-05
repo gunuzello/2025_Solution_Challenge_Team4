@@ -1,13 +1,16 @@
 package com.example.doran_backend.service;
 
 import com.example.doran_backend.dto.OnboardingRequest;
+import com.example.doran_backend.dto.OnboardingResponse;
 import com.example.doran_backend.dto.ProfileResponse;
+import com.example.doran_backend.dto.UserProfileContext;
 import com.example.doran_backend.entity.UserProfile;
 import com.example.doran_backend.repository.UserProfileRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,13 +22,14 @@ public class OnboardingService {
     private final UserProfileRepository userProfileRepository;
 
     @Transactional
-    public void saveOnboarding(Long userId, OnboardingRequest request) {
+    public OnboardingResponse saveOnboarding(Long userId, OnboardingRequest request) {
         // 1) 검증 (최소룰)
         validate(request);
 
         // 2) 기존 유저 프로필 있으면 업데이트, 없으면 생성
         UserProfile profile = userProfileRepository.findById(userId)
                 .orElseGet(() -> UserProfile.builder().userId(userId).build());
+        LocalDateTime completedAt = LocalDateTime.now();
 
         // 3) 값 세팅 (엔티티에 setter 없으면 "엔티티에 update 메서드"로 바꾸는게 정석)
         // 지금은 빠르게 가려고 reflection/Setter 없이 "새 객체로 다시 build" 방식 사용
@@ -39,10 +43,12 @@ public class OnboardingService {
                 .coreValues(joinCoreValues(request.getCoreValues()))
                 .extraValue(trim(request.getExtraValue()))
                 .onboardingCompleted(true)
-                .completedAt(java.time.LocalDateTime.now())
+                .completedAt(completedAt)
+                .guideCompleted(Boolean.TRUE.equals(profile.getGuideCompleted()))
                 .build();
 
         userProfileRepository.save(newProfile);
+        return new OnboardingResponse(userId, true, completedAt);
     }
 
     @Transactional(readOnly = true)
@@ -58,8 +64,39 @@ public class OnboardingService {
                 p.getHappiestMoment(),
                 splitCoreValues(p.getCoreValues()),
                 p.getExtraValue(),
-                p.getOnboardingCompleted()
+                p.getOnboardingCompleted(),
+                p.getGuideCompleted()
         );
+    }
+
+    @Transactional(readOnly = true)
+    public UserProfileContext getUserProfileContext(Long userId) {
+        UserProfile p = userProfileRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자 프로필을 찾을 수 없습니다. userId=" + userId));
+        return toContext(p);
+    }
+
+    @Transactional
+    public Boolean completeGuide(Long userId) {
+        UserProfile p = userProfileRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자 프로필을 찾을 수 없습니다. userId=" + userId));
+
+        UserProfile updated = UserProfile.builder()
+                .userId(p.getUserId())
+                .userTitle(p.getUserTitle())
+                .ageGroup(p.getAgeGroup())
+                .speechLevel(p.getSpeechLevel())
+                .hasChildren(p.getHasChildren())
+                .happiestMoment(p.getHappiestMoment())
+                .coreValues(p.getCoreValues())
+                .extraValue(p.getExtraValue())
+                .onboardingCompleted(p.getOnboardingCompleted())
+                .completedAt(p.getCompletedAt())
+                .guideCompleted(true)
+                .build();
+
+        userProfileRepository.save(updated);
+        return true;
     }
 
     // ----------------- validation -----------------
@@ -111,5 +148,21 @@ public class OnboardingService {
                 .map(String::trim)
                 .filter(s -> !s.isEmpty())
                 .collect(Collectors.toList());
+    }
+
+    private UserProfileContext toContext(UserProfile p) {
+        return new UserProfileContext(
+                valueOrDefault(p.getUserTitle(), "사용자"),
+                valueOrDefault(p.getAgeGroup(), "UNKNOWN"),
+                p.getHasChildren(),
+                p.getHappiestMoment(),
+                valueOrDefault(p.getSpeechLevel(), "HONORIFIC"),
+                new UserProfileContext.Defaults("warm", "one_open_ended_question", true)
+        );
+    }
+
+    private String valueOrDefault(String value, String defaultValue) {
+        String trimmed = trim(value);
+        return trimmed == null ? defaultValue : trimmed;
     }
 }

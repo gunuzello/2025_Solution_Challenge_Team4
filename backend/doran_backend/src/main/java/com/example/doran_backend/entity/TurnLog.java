@@ -6,7 +6,16 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "turn_log")
+@Table(
+        name = "turn_log",
+        uniqueConstraints = {
+                @UniqueConstraint(name = "uq_turn_log_session_request", columnNames = {"session_id", "request_id"})
+        },
+        indexes = {
+                @Index(name = "idx_turn_log_session_ts", columnList = "session_id, ts"),
+                @Index(name = "idx_turn_log_user_id", columnList = "user_id")
+        }
+)
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
@@ -41,14 +50,14 @@ public class TurnLog {
     @Column(name = "question", columnDefinition = "TEXT", nullable = false)
     private String question;
 
-    @Column(name = "raw_model_output", columnDefinition = "TEXT", nullable = false)
+    @Column(name = "raw_model_output", columnDefinition = "TEXT")
     private String rawModelOutput;
 
     @Column(name = "prompt_version", length = 50, nullable = false)
     private String promptVersion; // "interview_v1"
 
     @Column(name = "model", length = 50, nullable = false)
-    private String model; // "gemini"
+    private String model; // "dummy" or "gemini"
 
     @Column(name = "latency_ms", nullable = false)
     private Long latencyMs;

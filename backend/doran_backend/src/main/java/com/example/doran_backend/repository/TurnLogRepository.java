@@ -13,4 +13,6 @@ public interface TurnLogRepository extends JpaRepository<TurnLog, String> {
 
     // 로그 페이지용 (특정 세션의 turn들을 시간순으로 조회)
     List<TurnLog> findBySessionIdOrderByTsAsc(String sessionId);
+
+    long countByUserId(Long userId);
 }
